@@ -15,7 +15,7 @@ services:
     volumes:
       - zep-db:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
+      test: ["CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -42,12 +42,12 @@ services:
     container_name: zep
     restart: on-failure
     depends_on:
-        db:
-          condition: service_healthy
-        nlp:
-          condition: service_healthy
+      db:
+        condition: service_healthy
+      nlp:
+        condition: service_healthy
     ports:
-        - "8000:8000"
+      - "8000:8000"
     volumes:
       - ./config.yaml:/app/config.yaml
     environment:
@@ -71,11 +71,13 @@ services:
     networks:
       - zep-network
   zep_proxy:
-    build: ./services/nginx
+    build: ./zep-nginx/
     ports:
-      - 1337:80
-    depends_on:
-      - zep
+      - 8001:8001
+    links:
+      - zep:zep
+    networks:
+      - zep-network
 networks:
   zep-network:
     driver: bridge
